@@ -1,0 +1,70 @@
+version: "2.1"
+
+services:
+
+  app: &app
+    image: node:10.13
+    user: $UID
+    working_dir: /home/node/app
+    volumes:
+      - ./server:/home/node/app
+    depends_on:
+      broker:
+        condition: service_started
+      state:
+        condition: service_started
+    environment:
+      # NODE_ENV: production
+      SCC_STATE_SERVER_HOST: state
+      SCC_STATE_SERVER_ACK_TIMEOUT: 1
+      SCC_STATE_SERVER_CONNECT_TIMEOUT: 1
+    ports:
+      - 8000:8000
+    command: "yarn start"
+
+  app-2:
+    <<: *app
+    ports:
+      - 8001:8000
+
+  server:
+    image: nginx:1.14
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+    depends_on:
+      app:
+        condition: service_started
+      app-2:
+        condition: service_started
+    ports:
+      - 3000:3000
+
+  broker:
+    image: node:10.13
+    user: $UID
+    working_dir: /home/node/app
+    volumes:
+      # - ./sc-redis-broker:/home/node/app
+      - ./scc-broker:/home/node/app
+    depends_on:
+      state:
+        condition: service_started
+    #   redis:
+    #     condition: service_started
+    environment:
+      SCC_STATE_SERVER_HOST: state
+    #   SC_BROKER_REDIS_HOST: redis
+    #   SC_BROKER_REDIS_PORT: 6379
+    # command: "node index.js"
+    command: "node server.js"
+
+  state:
+    image: node:10.13
+    user: $UID
+    working_dir: /home/node/app
+    volumes:
+      - ./scc-state:/home/node/app
+    command: "node server.js"
+
+  redis:
+    image: redis:4.0

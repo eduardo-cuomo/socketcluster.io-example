@@ -1,0 +1,8 @@
+{
+  "name": "socketcluster-sample",
+  "description": "A sample SocketCluster app",
+  "version": "1.0.0",
+  "dependencies": {
+    "socketcluster-client": "^14.2.1"
+  }
+}
