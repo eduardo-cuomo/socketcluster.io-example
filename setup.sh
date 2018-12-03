@@ -2,20 +2,30 @@
 
 set -ex
 
-nvm install
+if ! type nvm >/dev/null 2>&1 ; then
+  nvm install
+fi
+
+_install() {
+  if type yarn >/dev/null 2>&1 ; then
+    yarn install
+  else
+    npm install
+  fi
+}
 
 [ -d scc-state ]       || git clone https://github.com/SocketCluster/scc-state      scc-state
 [ -d scc-broker ]      || git clone https://github.com/SocketCluster/scc-broker     scc-broker
 [ -d sc-redis-broker ] || git clone https://github.com/rapidops/sc-redis-broker.git sc-redis-broker
 
 ( cd scc-state
-  yarn install
+  _install
 )
 
 ( cd scc-broker
-  yarn install
+  _install
 )
 
 ( cd sc-redis-broker
-  yarn install
+  _install
 )
