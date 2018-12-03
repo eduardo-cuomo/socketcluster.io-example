@@ -15,3 +15,5 @@ cd socketcluster.io-example
 ```bash
 docker-compose up server app app-2
 ```
+
+Browse [http://localhost:3000](http://localhost:3000)
