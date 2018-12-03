@@ -7,7 +7,7 @@ socketcluster.io example.
 ```bash
 git clone https://github.com/eduardo-cuomo/socketcluster.io-example.git
 cd socketcluster.io-example
-./setup.sh
+. ./setup.sh
 ```
 
 ## Run

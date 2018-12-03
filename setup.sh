@@ -1,31 +1,29 @@
-#!/usr/bin/env bash
+# Run: . ./setup.sh
 
-set -ex
+( set -ex
 
-if ! type nvm >/dev/null 2>&1 ; then
-  nvm install
-fi
-
-_install() {
-  if type yarn >/dev/null 2>&1 ; then
-    yarn install
-  else
-    npm install
+  if ! type nvm >/dev/null 2>&1 ; then
+    nvm install
   fi
-}
 
-[ -d scc-state ]       || git clone https://github.com/SocketCluster/scc-state      scc-state
-[ -d scc-broker ]      || git clone https://github.com/SocketCluster/scc-broker     scc-broker
-[ -d sc-redis-broker ] || git clone https://github.com/rapidops/sc-redis-broker.git sc-redis-broker
+  _clone() {
+    local git="$1"
+    local dir="$2"
 
-( cd scc-state
-  _install
-)
+    if [ ! -d "${dir}" ]; then
+      git clone ${git} "${dir}"
+    fi
 
-( cd scc-broker
-  _install
-)
+    ( cd "${dir}"
+      if type yarn >/dev/null 2>&1 ; then
+        yarn install
+      else
+        npm install
+      fi
+    )
+  }
 
-( cd sc-redis-broker
-  _install
+  _clone https://github.com/SocketCluster/scc-state      scc-state
+  _clone https://github.com/SocketCluster/scc-broker     scc-broker
+  _clone https://github.com/rapidops/sc-redis-broker.git sc-redis-broker
 )
