@@ -3,7 +3,7 @@
   <head>
     <title>SocketCluster Test</title>
     <link rel="icon" type="image/png" href="/favicon.ico">
-    <script type="text/javascript" src="/node_modules/socketcluster-client/socketcluster.js"></script>
+    <script type="text/javascript" src="socketcluster.js"></script>
     <style>
       html {
         height: 100%;
@@ -52,12 +52,13 @@
         <div class="text">
           Use the console: <b>F12</b>
         </div>
+        <button onclick="sendEvent()">Send Event</button>
       </div>
     </div>
     <script type="text/javascript">
-      var socket = socketCluster.connect(),
-          channel = 'sample',
-          evt = 'sampleEvent';
+    
+      var socket = socketCluster.connect();
+      var evt = 'sampleEvent';
 
       socket.on('error', function (err) {
         console.error(err);
@@ -67,31 +68,12 @@
         console.log('Socket is connected');
       });
 
-      socket.on(evt, function (data) {
-        console.log('Socket Event:', evt, data);
-      });
+      socket.subscribe('testRoom').watch(data => console.log(data));
 
-      // socket.on('random', function (data) {
-      //   console.log('Received "random" event with data: ', data);
-      // });
+      function sendEvent() {
+        socket.publish('testRoom', { msg: 'Probando multiserver' });
+      }
 
-      var socketChannel = socket.subscribe(channel);
-
-      socketChannel.on(evt, function (data) {
-        console.log('SocketChannel Event:', evt, data);
-      });
-
-      socketChannel.on('subscribeFail', function (err) {
-        console.error('Failed to subscribe to the channel due to error:', err);
-      });
-
-      socketChannel.watch(function (num) {
-        console.log('Channel message:', num);
-      });
-
-      // console.log('Use:');
-      // console.log('  > socket.emit(channel, \'Message...\');');
-      // console.log('  > socketChannel.emit(\'Message...\');');
     </script>
   </body>
 </html>
