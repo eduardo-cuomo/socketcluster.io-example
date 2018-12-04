@@ -27,8 +27,6 @@ class Worker extends SCWorker {
 
     httpServer.on('request', app);
 
-    var count = 0;
-
     /*
       In here we handle our incoming realtime connections and listen for events.
     */
@@ -38,19 +36,12 @@ class Worker extends SCWorker {
       // replace this with your own logic
 
       socket.on('sampleClientEvent', function (data) {
-        count++;
         console.log('Handled sampleClientEvent', data);
-        scServer.exchange.publish('sample', count);
+        socket.emit('sampleEvent','Server Response: ' + data);
       });
 
-      // var interval = setInterval(function () {
-      //   socket.emit('random', {
-      //     number: Math.floor(Math.random() * 5)
-      //   });
-      // }, 1000);
-
       socket.on('disconnect', function () {
-        clearInterval(interval);
+
       });
     });
   }
